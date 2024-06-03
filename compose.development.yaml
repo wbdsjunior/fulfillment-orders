@@ -1,0 +1,14 @@
+name: fulfillment-orders
+services:
+  fulfillment-orders:
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+      no_cache: true
+    image: fulfillment-orders:snapshot
+    environment:
+      - TZ=America/Sao_Paulo
+    volumes:
+      - .:/home/java/work
+    ports:
+      - 8080:8080

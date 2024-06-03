@@ -1,0 +1,30 @@
+FROM eclipse-temurin:21-jammy
+
+RUN groupadd --gid 1000 java \
+ && useradd --uid 1000 --gid java --shell /bin/bash --create-home java \
+ && apt -y update \
+ && apt -y install git \
+ && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
+ && git config --global init.defaultBranch main
+
+USER java
+
+# Node.js for SonarLint JSON analysis
+SHELL ["/bin/bash", "--login", "-i", "-c"]
+
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
+ && source ~/.bashrc \
+ && nvm install 20.14.0
+
+SHELL ["/bin/sh", "-c"]
+# /Node.js for SonarLint JSON analysis
+
+WORKDIR /home/java/work
+
+ARG JAVA_OPTS
+
+ENV JAVA_OPTS=$JAVA_OPTS
+
+ENTRYPOINT ["./entrypoint.development.sh"]
+
+EXPOSE 8080
