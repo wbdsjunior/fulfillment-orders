@@ -3,19 +3,27 @@ package io.github.wbdsjunior.fulfillment.orders;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class FileNormalizerService {
 
-    public void normalize(final File file) throws IOException {
+    public Set<BuyerDto> normalize(final File file) throws IOException {
 
+        var buyers = new HashSet<BuyerDto>();
         Files.lines(file.toPath())
-                .sorted(String::compareTo)
                 .map(FileLineBuyer::from)
-                .collect(Collectors.toList());
-
+                .forEach(fileLineBuyer -> buyers.stream()
+                        .filter(existingBuyer -> existingBuyer.id() == fileLineBuyer.id())
+                        .findFirst()
+                        .ifPresentOrElse(
+                                  buyerFound -> buyerFound.add(fileLineBuyer.order())
+                                , () -> buyers.add(BuyerDto.from(fileLineBuyer))
+                            )
+                    );
+         return buyers;
     }
 }

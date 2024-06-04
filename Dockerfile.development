@@ -13,7 +13,9 @@ USER java
 SHELL ["/bin/bash", "--login", "-i", "-c"]
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
+# todo: figure out why this isn't saving the profile settings
  && source ~/.bashrc \
+# /todo:
  && nvm install 20.14.0
 
 SHELL ["/bin/sh", "-c"]
