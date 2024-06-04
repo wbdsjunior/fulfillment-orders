@@ -6,10 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Builder;
-
-@Builder
-public record BuyerDto (
+public record BuyerDto(
           @JsonProperty("user_id") long id
         , String name
         , Set<OrderDto> orders

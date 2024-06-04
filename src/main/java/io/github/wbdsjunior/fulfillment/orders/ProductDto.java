@@ -4,10 +4,7 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Builder;
-
-@Builder
-public record ProductDto (
+public record ProductDto(
           @JsonProperty("product_id") long id
         , @JsonProperty("value") BigDecimal price
     ) {

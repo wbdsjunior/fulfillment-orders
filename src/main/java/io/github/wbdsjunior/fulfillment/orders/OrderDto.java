@@ -8,17 +8,14 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Builder;
-
-@Builder
-public record OrderDto (
+public record OrderDto(
           @JsonProperty("order_id") long id
         , @JsonProperty("date") LocalDate salesDate
         , Set<ProductDto> products
     ) {
 
     @JsonProperty("total")
-    public BigDecimal getTotalAmount() {
+    public BigDecimal totalAmount() {
 
         return products.stream()
                 .map(ProductDto::price)
