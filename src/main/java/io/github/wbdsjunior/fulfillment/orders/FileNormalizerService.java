@@ -8,37 +8,41 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import io.github.wbdsjunior.fulfillment.orders.usecase.NormalizerService;
+
 @Service
-public class FileNormalizerService {
+public class FileNormalizerService implements NormalizerService<File, Set<BuyerDto>>{
 
     public Set<BuyerDto> normalize(final File file) throws IOException {
 
         var buyers = new HashSet<BuyerDto>();
-        Files.lines(file.toPath())
-                .map(FileLineBuyer::from)
-                .forEach(fileLineBuyer -> buyers.stream()
-                        .filter(existingBuyer -> existingBuyer.id() == fileLineBuyer.id())
-                        .findFirst()
-                        .ifPresentOrElse(
-                                  buyerFound -> {
 
-                                        try {
+        try (var fileLines = Files.lines(file.toPath())) {
 
-                                            buyerFound.add(fileLineBuyer.order());
-                                        } catch (DuplicatedBuyerOrderProductException e) {
+            fileLines.map(FileLineBuyer::from)
+                    .forEach(fileLineBuyer -> buyers.stream()
+                    .filter(existingBuyer -> existingBuyer.id() == fileLineBuyer.id())
+                    .findFirst()
+                    .ifPresentOrElse(
+                            buyerFound -> {
 
-                                            throw new DuplicatedBuyerOrderProductException(
-                                                      String.format(
-                                                              "Duplicated order product for buyer {id=%d}"
-                                                            , fileLineBuyer.id()
-                                                        )
-                                                    , e
-                                                );
-                                        }
+                                    try {
+
+                                        buyerFound.add(fileLineBuyer.order());
+                                    } catch (DuplicatedBuyerOrderProductException e) {
+
+                                        throw new DuplicatedBuyerOrderProductException(
+                                                  String.format(
+                                                          "Duplicated order product for buyer {id=%d}"
+                                                        , fileLineBuyer.id()
+                                                    )
+                                                , e
+                                            );
                                     }
-                                , () -> buyers.add(BuyerDto.from(fileLineBuyer))
-                            )
-                    );
-         return buyers;
+                                }
+                            , () -> buyers.add(BuyerDto.from(fileLineBuyer))
+                        ));
+        }
+        return buyers;
     }
 }
