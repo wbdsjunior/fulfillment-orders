@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -22,15 +23,22 @@ class FileNormalizerServiceTests {
     @BeforeEach
     void beforeEach(final TestInfo testInfo) throws IOException {
 
-        if (!"duplicatedBuyerOrderProduct()".equalsIgnoreCase(testInfo.getDisplayName())) {
+        if (!Arrays.asList(
+                          "zeroBuyersId()"
+                        , "blankBuyersName()"
+                        , "zeroOrdersId()"
+                        , "inTheFutureOrdersSalesDate()"
+                        , "zeroProductsId()"
+                        , "zeroProductsPrice()"
+                        , "duplicatedBuyerOrderProduct()"
+                    )
+                .contains(testInfo.getDisplayName())) {
 
             buyers = new FileNormalizerService()
                         .normalize(new File(getClass()
                                 .getClassLoader()
                                 .getResource("data_1.txt")
-                                .getPath()
-                    )
-                );
+                                .getPath()));
         }
     }
 
@@ -38,7 +46,7 @@ class FileNormalizerServiceTests {
     void hasBuyers() {
 
         assertEquals(
-                  100
+                  1
                 , buyers.size()
             );
     }
@@ -58,7 +66,7 @@ class FileNormalizerServiceTests {
     void buyerOrderHasProducts() {
 
         assertEquals(
-                  3
+                  2
                 , firstBuyerOrder()
                         .products()
                         .size()
@@ -69,23 +77,101 @@ class FileNormalizerServiceTests {
     void buyerOrderTotalAmount() {
 
         assertEquals(
-                  BigDecimal.valueOf(Double.valueOf("2966.46"))
+                  BigDecimal.valueOf(Double.valueOf("2168.43"))
                 , firstBuyerOrder()
                         .totalAmount()
             );
     }
 
     @Test
-    void duplicatedBuyerOrderProduct() {
+    void zeroBuyersId() {
 
         assertThrows(
-                DuplicatedBuyerOrderProductException.class
+                  IllegalArgumentException.class
                 , () -> new FileNormalizerService()
                         .normalize(new File(getClass()
                                 .getClassLoader()
                                 .getResource("data_2.txt")
                                 .getPath()))
-            );
+                );
+    }
+
+    @Test
+    void blankBuyersName() {
+
+        assertThrows(
+                  IllegalArgumentException.class
+                , () -> new FileNormalizerService()
+                        .normalize(new File(getClass()
+                                .getClassLoader()
+                                .getResource("data_3.txt")
+                                .getPath()))
+                );
+    }
+
+    @Test
+    void zeroOrdersId() {
+
+        assertThrows(
+                  IllegalArgumentException.class
+                , () -> new FileNormalizerService()
+                        .normalize(new File(getClass()
+                                .getClassLoader()
+                                .getResource("data_4.txt")
+                                .getPath()))
+                );
+    }
+
+    @Test
+    void inTheFutureOrdersSalesDate() {
+
+        assertThrows(
+                  IllegalArgumentException.class
+                , () -> new FileNormalizerService()
+                        .normalize(new File(getClass()
+                                .getClassLoader()
+                                .getResource("data_7.txt")
+                                .getPath()))
+                );
+    }
+
+    @Test
+    void zeroProductsId() {
+
+        assertThrows(
+                  IllegalArgumentException.class
+                , () -> new FileNormalizerService()
+                        .normalize(new File(getClass()
+                                .getClassLoader()
+                                .getResource("data_5.txt")
+                                .getPath()))
+                );
+    }
+
+    @Test
+    void zeroProductsPrice() {
+
+        assertThrows(
+                  IllegalArgumentException.class
+                , () -> new FileNormalizerService()
+                        .normalize(new File(getClass()
+                                .getClassLoader()
+                                .getResource("data_6.txt")
+                                .getPath()))
+                );
+    }
+
+    @Test
+    void duplicatedBuyerOrderProduct() {
+
+        assertThrows(
+                  DuplicatedBuyerOrderProductException.class
+                , () -> new FileNormalizerService()
+                        .normalize(new File(getClass()
+                                .getClassLoader()
+                                .getResource("data_8.txt")
+                                .getPath()))
+                );
     }
 
     private BuyerDto fisrtBuyer() {

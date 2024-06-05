@@ -34,10 +34,7 @@ public record OrderDto(
     public void add(FileLineProduct product) {
 
         products.stream()
-                .filter(existingProduct ->
-                           existingProduct.id() == product.id()
-                        && existingProduct.price().doubleValue() == product.price().doubleValue()
-                    )
+                .filter(existingProduct -> existingProduct.id() == product.id())
                 .findFirst()
                 .ifPresentOrElse(
                           productFound -> {
