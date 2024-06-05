@@ -34,10 +34,19 @@ public record OrderDto(
     public void add(FileLineProduct product) {
 
         products.stream()
-                .filter(existingProduct -> existingProduct.id() == product.id())
+                .filter(existingProduct ->
+                           existingProduct.id() == product.id()
+                        && existingProduct.price().doubleValue() == product.price().doubleValue()
+                    )
                 .findFirst()
                 .ifPresentOrElse(
-                          productFound -> {}
+                          productFound -> {
+                                throw new DuplicatedBuyerOrderProductException(String.format(
+                                          "Duplicated product={id=%d,price=%f}"
+                                        , product.id()
+                                        , product.price().doubleValue()
+                                    ));
+                            }
                         , () -> products.add(ProductDto.from(product))
                     );
     }

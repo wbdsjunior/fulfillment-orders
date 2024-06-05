@@ -1,6 +1,7 @@
 package io.github.wbdsjunior.fulfillment.orders;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,21 +13,25 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 class FileNormalizerServiceTests {
 
     private Set<BuyerDto> buyers;
 
     @BeforeEach
-    void beforeEach() throws IOException {
+    void beforeEach(final TestInfo testInfo) throws IOException {
 
-        buyers = new FileNormalizerService()
-                    .normalize(new File(getClass()
-                    .getClassLoader()
-                    .getResource("data_1.txt")
-                    .getPath()
-                )
-            );
+        if (!"duplicatedBuyerOrderProduct()".equalsIgnoreCase(testInfo.getDisplayName())) {
+
+            buyers = new FileNormalizerService()
+                        .normalize(new File(getClass()
+                                .getClassLoader()
+                                .getResource("data_1.txt")
+                                .getPath()
+                    )
+                );
+        }
     }
 
     @Test
@@ -39,13 +44,47 @@ class FileNormalizerServiceTests {
     }
 
     @Test
-    void firstBuyerHasOrders() {
+    void buyerHasOrders() {
 
         assertEquals(
                   15
                 , fisrtBuyer()
                         .orders()
                         .size()
+            );
+    }
+
+    @Test
+    void buyerOrderHasProducts() {
+
+        assertEquals(
+                  3
+                , firstBuyerOrder()
+                        .products()
+                        .size()
+            );
+    }
+
+    @Test
+    void buyerOrderTotalAmount() {
+
+        assertEquals(
+                  BigDecimal.valueOf(Double.valueOf("2966.46"))
+                , firstBuyerOrder()
+                        .totalAmount()
+            );
+    }
+
+    @Test
+    void duplicatedBuyerOrderProduct() {
+
+        assertThrows(
+                DuplicatedBuyerOrderProductException.class
+                , () -> new FileNormalizerService()
+                        .normalize(new File(getClass()
+                                .getClassLoader()
+                                .getResource("data_2.txt")
+                                .getPath()))
             );
     }
 
@@ -58,27 +97,6 @@ class FileNormalizerServiceTests {
         return buyers.stream()
                 .sorted(Comparator.comparingLong(BuyerDto::id))
                 .collect(Collectors.toList());
-    }
-
-    @Test
-    void firstBuyerOrderHasProducts() {
-
-        assertEquals(
-                  2
-                , firstBuyerOrder()
-                        .products()
-                        .size()
-            );
-    }
-
-    @Test
-    void firstBuyerOrderTotalAmount() {
-
-        assertEquals(
-                  BigDecimal.valueOf(Double.valueOf("2365.03"))
-                , firstBuyerOrder()
-                        .totalAmount()
-            );
     }
 
     private OrderDto firstBuyerOrder() {

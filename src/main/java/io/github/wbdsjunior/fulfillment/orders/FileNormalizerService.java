@@ -20,7 +20,22 @@ public class FileNormalizerService {
                         .filter(existingBuyer -> existingBuyer.id() == fileLineBuyer.id())
                         .findFirst()
                         .ifPresentOrElse(
-                                  buyerFound -> buyerFound.add(fileLineBuyer.order())
+                                  buyerFound -> {
+
+                                        try {
+
+                                            buyerFound.add(fileLineBuyer.order());
+                                        } catch (DuplicatedBuyerOrderProductException e) {
+
+                                            throw new DuplicatedBuyerOrderProductException(
+                                                      String.format(
+                                                              "Duplicated order product for buyer {id=%d}"
+                                                            , fileLineBuyer.id()
+                                                        )
+                                                    , e
+                                                );
+                                        }
+                                    }
                                 , () -> buyers.add(BuyerDto.from(fileLineBuyer))
                             )
                     );

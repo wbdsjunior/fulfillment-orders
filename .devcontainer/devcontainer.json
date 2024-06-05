@@ -59,6 +59,7 @@
 				"git.openRepositoryInParentFolders": "always",
 				"java.configuration.updateBuildConfiguration": "automatic",
 				"java.compile.nullAnalysis.mode": "automatic",
+				"java.settings.url": "eclipse-jee-2024-03-general-preferences.epf",
 				"redhat.telemetry.enabled": false,
 				"spring.initializr.defaultLanguage": "Java",
 				"spring.initializr.defaultPackaging": "JAR",

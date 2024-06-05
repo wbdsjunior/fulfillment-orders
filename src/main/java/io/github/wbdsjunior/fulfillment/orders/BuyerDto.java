@@ -23,12 +23,24 @@ public record BuyerDto(
 
         public void add(FileLineOrder order) {
 
-            orders.stream()
-                    .filter(existingOrder -> existingOrder.id() == order.id())
-                    .findFirst()
-                    .ifPresentOrElse(
-                              orderFound -> orderFound.add(order.product())
-                            , () -> orders.add(OrderDto.from(order))
-                        );
+            try {
+
+                orders.stream()
+                        .filter(existingOrder -> existingOrder.id() == order.id())
+                        .findFirst()
+                        .ifPresentOrElse(
+                                  orderFound -> orderFound.add(order.product())
+                                , () -> orders.add(OrderDto.from(order))
+                            );
+            } catch (DuplicatedBuyerOrderProductException e) {
+
+                throw new DuplicatedBuyerOrderProductException(
+                          String.format(
+                                  "Duplicated product in order {id=%d}"
+                                , order.id()
+                            )
+                        , e
+                    );
+            }
         }
 }
