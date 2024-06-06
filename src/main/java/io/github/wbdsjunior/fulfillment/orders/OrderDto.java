@@ -7,7 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({ "order_id", "total", "date", "products" })
 public record OrderDto(
           @JsonProperty("order_id") long id
         , @JsonProperty("date") LocalDate salesDate

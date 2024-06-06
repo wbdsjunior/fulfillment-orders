@@ -5,42 +5,44 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder(value = { "user_id", "name", "orders" })
 public record BuyerDto(
           @JsonProperty("user_id") long id
         , String name
         , Set<OrderDto> orders
-    ) { 
+    ) {
 
-        public static BuyerDto from(FileLineBuyer buyer) {
+    public static BuyerDto from(FileLineBuyer buyer) {
 
-            return new BuyerDto(
-                      buyer.id()
-                    , buyer.name()
-                    , new HashSet<>(Arrays.asList(OrderDto.from(buyer.order())))
+        return new BuyerDto(
+                  buyer.id()
+                , buyer.name()
+                , new HashSet<>(Arrays.asList(OrderDto.from(buyer.order())))
+            );
+    }
+
+    public void add(FileLineOrder order) {
+
+        try {
+
+            orders.stream()
+                    .filter(existingOrder -> existingOrder.id() == order.id())
+                    .findFirst()
+                    .ifPresentOrElse(
+                              orderFound -> orderFound.add(order.product())
+                            , () -> orders.add(OrderDto.from(order))
+                        );
+        } catch (DuplicatedBuyerOrderProductException e) {
+
+            throw new DuplicatedBuyerOrderProductException(
+                    String.format(
+                              "Duplicated product in order {id=%d}"
+                            , order.id()
+                        )
+                    , e
                 );
         }
-
-        public void add(FileLineOrder order) {
-
-            try {
-
-                orders.stream()
-                        .filter(existingOrder -> existingOrder.id() == order.id())
-                        .findFirst()
-                        .ifPresentOrElse(
-                                  orderFound -> orderFound.add(order.product())
-                                , () -> orders.add(OrderDto.from(order))
-                            );
-            } catch (DuplicatedBuyerOrderProductException e) {
-
-                throw new DuplicatedBuyerOrderProductException(
-                          String.format(
-                                  "Duplicated product in order {id=%d}"
-                                , order.id()
-                            )
-                        , e
-                    );
-            }
-        }
+    }
 }
