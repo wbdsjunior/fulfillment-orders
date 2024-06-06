@@ -1,6 +1,7 @@
 package io.github.wbdsjunior.fulfillment.orders.controller;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,8 @@ public class BuyerOrdersRestController {
     @GetMapping
     public ResponseEntity<Set<OrderDto>> orders(
               @PathVariable long buyerId
-            , @RequestParam LocalDate startSalesDate
-            , @RequestParam LocalDate endSalesDate
+            , @RequestParam Optional<LocalDate> startSalesDate
+            , @RequestParam Optional<LocalDate> endSalesDate
         ) {
 
         throw new IllegalStateException("Sorry! Not yet.");
