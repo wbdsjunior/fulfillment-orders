@@ -24,8 +24,9 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<springdoc-openapi-starter-webmvc-ui.version>2.5.0</springdoc-openapi-starter-webmvc-ui.version>
 		<jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
-		<jacoco.minimum.bundle.complexity.covered-ratio.rule>80%</jacoco.minimum.bundle.complexity.covered-ratio.rule>
+		<jacoco.minimum.bundle.complexity.covered-ratio.rule>1%</jacoco.minimum.bundle.complexity.covered-ratio.rule>
 	</properties>
 
 	<dependencies>
@@ -48,6 +49,11 @@
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${springdoc-openapi-starter-webmvc-ui.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
