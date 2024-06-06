@@ -8,8 +8,6 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import io.github.wbdsjunior.fulfillment.orders.usecase.NormalizerService;
-
 @Service
 public class FileNormalizerService implements NormalizerService<File, Set<BuyerDto>>{
 
